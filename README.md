@@ -10,7 +10,6 @@ This backend supports full CRUD functionality with authentication, password mana
 ✅ User Authentication (Register, Login, JWT Auth)  
 ✅ Add / Edit / Delete Todos  
 ✅ Update & Change Password  
-✅ Role-based Authorization  
 ✅ MongoDB Atlas Database Integration  
 ✅ Nodemailer Email Support (for notifications or password reset)  
 
@@ -104,40 +103,6 @@ PASS=<your_email_app_password>
 
 ---
 
-## 📡 API Endpoints
-
-### 🔐 Auth Routes
-| Method | Endpoint | Description |
-|--------|-----------|-------------|
-| **POST** | `/user/register` | Register a new user |
-| **POST** | `/user/login` | Login user |
-| **POST** | `/user/auth/logout` | Logout user |
-| **POST** | `/user/resend/email-verification-link/:email` | Resend email verification link |
-| **POST** | `/user/auth/verify-email/:token` | Verify user email |
-| **PUT** | `/user/auth/update/password` | Update user password |
-
----
-
-### 👥 User Routes
-| Method | Endpoint | Description |
-|--------|-----------|-------------|
-| **GET** | `/users/listing` | Get all users |
-| **GET** | `/user/get/:id` | Get user by ID |
-| **DELETE** | `/user/delete/:id` | Delete user by ID |
-
----
-
-### ✅ Todo Routes
-| Method | Endpoint | Description |
-|--------|-----------|-------------|
-| **GET** | `/todos/listing` | Get all todos |
-| **POST** | `/todos/create` | Create a new todo |
-| **GET** | `/todos/get/:id` | Get todo by ID |
-| **PUT** | `/todos/update/:id` | Update todo by ID |
-| **DELETE** | `/todos/delete/:id` | Delete todo by ID |
-
----
-
 ## 🧠 Example Todo Object
 
 ```json
@@ -149,9 +114,6 @@ PASS=<your_email_app_password>
   "completed": false
 }
 ```
-
----
-
 ## 🌍 Deployment
 
 You can host this backend for **free** using:
@@ -173,12 +135,6 @@ Full Stack MERN Developer
 🔗 [Portfolio](https://faizanportfolio-seven.vercel.app/)  
 💼 [GitHub](https://github.com/faizan1699)  
 ✉️ faizanrasheed169@gmail.com  
-
----
-
-## 🧾 License
-
-This project is licensed under the **MIT License** – feel free to use and modify it.
 
 ---
 
