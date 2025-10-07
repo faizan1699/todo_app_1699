@@ -5,6 +5,7 @@ import { errorMessage } from "../utils/utils.js";
 import { sendVerificationEmail } from "../utils/nodemailer.js";
 import { User } from "../schema/usersSchema.js";
 import jwt from "jsonwebtoken";
+
 export const registerUser = async (req, res) => {
   try {
     const { name, email, password, confirm_password } = req.body;
@@ -114,6 +115,8 @@ export const loginUser = async (req, res) => {
     });
   } catch (error) {
     return errorMessage(res, error);
+  } finally {
+    console.log("login api called");
   }
 };
 
@@ -176,6 +179,17 @@ export const resendVerificationLink = async (req, res) => {
     return res
       .status(200)
       .json({ message: "Verification link sent to your email", status: true });
+  } catch (error) {
+    return errorMessage(res, error);
+  }
+};
+
+export const logoutUser = async (req, res) => {
+  try {
+    res.clearCookie("token");
+    return res
+      .status(200)
+      .json({ message: "Logout successfully", status: true });
   } catch (error) {
     return errorMessage(res, error);
   }

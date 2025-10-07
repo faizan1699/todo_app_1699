@@ -76,6 +76,48 @@ export const createTodo = async (req, res) => {
   }
 };
 
+export const updateTodoById = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const { title, details, is_completed, deadline, priority } = req.body;
+    const allowedUpdates = [title, details, is_completed, deadline, priority];
+    const updates = Object.keys(req.body);
+    const isValid = updates.every((key) => allowedUpdates.includes(key));
+
+    if (!isValid) {
+      return res
+        .status(400)
+        .json({ error: "invalid field to update , pls check", status: false });
+    }
+    const x = await observer(req, res);
+    if (!x) {
+      return res.status(401).json({ message: "Unauthorized", status: false });
+    }
+
+    const data = await Todos.findById(id);
+    if (data.user_id != x.user_id) {
+      return res.status(200).json({ message: "data not found", status: true });
+    }
+
+    const response = await Todos.findByIdAndUpdate(id, {
+      title,
+      details,
+      is_completed,
+      deadline,
+      priority,
+    });
+
+    return res.status(200).json({
+      message: "Todo Updated",
+      status: true,
+      response,
+    });
+  } catch (error) {
+    return errorMessage(res, error);
+  }
+};
+
 export const getUTodoByID = async (req, res) => {
   try {
     const { id } = req.params;
@@ -100,22 +142,17 @@ export const getUTodoByID = async (req, res) => {
 export const deleteTodoByID = async (req, res) => {
   try {
     const { id } = req.params;
-
     const x = await observer(req, res);
     if (!x) {
       return res.status(401).json({ message: "Unauthorized", status: false });
     }
-
-    const data = await Todos.find(id);
-
+    const data = await Todos.findById(id);
     if (data.user_id != x.user_id) {
       return res.status(200).json({ message: "data not found", status: true });
     }
-    await Todos.deleteOne(id);
+    await Todos.findByIdAndDelete(id);
 
-    return res
-      .status(200)
-      .json({ message: "Todo Deleted", status: true, data });
+    return res.status(200).json({ message: "Todo Deleted", status: true });
   } catch (error) {
     return errorMessage(res, error);
   }

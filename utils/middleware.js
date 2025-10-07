@@ -7,7 +7,7 @@ export const middleware = async (req, res, next) => {
     if (!token) {
       return res
         .status(401)
-        .json({ message: "Unauthorized, please login again" });
+        .json({ message: "Unauthorized, please login again", status: false });
     }
 
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
