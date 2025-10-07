@@ -1,7 +1,7 @@
 import nodemailer from "nodemailer";
 import jwt from "jsonwebtoken";
-import { errorMessage } from "./utils.js";
-import { User } from "../schema/usersSchema.js";
+import { errorMessage } from "../utils.js";
+import { User } from "../../schema/usersSchema.js";
 
 const admin = process.env.ADMIN;
 const pass = process.env.PASS;

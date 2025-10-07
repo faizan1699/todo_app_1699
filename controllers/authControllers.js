@@ -2,9 +2,10 @@ import { validateReqFields } from "../utils/check_req_fields.js";
 import { generateOTP } from "../utils/utils.js";
 import bcrypt from "bcryptjs";
 import { errorMessage } from "../utils/utils.js";
-import { sendVerificationEmail } from "../utils/nodemailer.js";
+import { sendVerificationEmail } from "../utils/nodemailer/email-verification.js";
 import { User } from "../schema/usersSchema.js";
 import jwt from "jsonwebtoken";
+import { sendOTPTOUser } from "../utils/nodemailer/sendotp.js";
 
 export const registerUser = async (req, res) => {
   try {
@@ -190,6 +191,86 @@ export const logoutUser = async (req, res) => {
     return res
       .status(200)
       .json({ message: "Logout successfully", status: true });
+  } catch (error) {
+    return errorMessage(res, error);
+  }
+};
+
+export const forgetPasswordSendOTP = async (req, res) => {
+  try {
+    const { email } = req.body;
+    if (!email) {
+      return res.status(200).json({
+        message: "email required",
+        status: false,
+      });
+    }
+    const user = await User.findOne(email);
+    if (!user) {
+      return res.status(400).json({
+        message: "email not associated with this site",
+        status: false,
+      });
+    }
+    const otp = generateOTP(4);
+
+    await sendOTPTOUser(email, otp, res);
+
+    user.otp = otp;
+    await user.save();
+
+    return res.status(200).json({
+      message: `otp send successfully sent to = ${email}`,
+      status: true,
+    });
+  } catch (error) {
+    return errorMessage(res, error);
+  }
+};
+
+export const forgetPassowrd = async (req, res) => {
+  try {
+    const { name, email, password, confirm_password } = req.body;
+    const isValidate = validateReqFields(req.body, [
+      "name",
+      "email",
+      "password",
+      "confirm_password",
+    ]);
+
+    if (!isValidate.success) {
+      return res.status(400).json({ message: isValidate.message });
+    }
+
+    if (password !== confirm_password) {
+      return res.status(400).json({ message: "password not match." });
+    }
+
+    const user = await User.findOne({ email: email });
+    if (user) {
+      return res
+        .status(201)
+        .json({ message: "User already / exists", status: false });
+    }
+
+    const salt = await bcrypt.genSalt(10);
+    const encryptedPassword = await bcrypt.hash(password, salt);
+
+    const id = generateOTP(4);
+    const newUser = await User.create({
+      name,
+      email,
+      password: encryptedPassword,
+      user_id: id,
+    });
+    await newUser.save();
+    await sendVerificationEmail(email, res);
+
+    return res.status(200).json({
+      message:
+        "User registered successfully , an account verification link has been sent to your email.",
+      status: true,
+    });
   } catch (error) {
     return errorMessage(res, error);
   }

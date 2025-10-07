@@ -1,5 +1,6 @@
 import express from "express";
 import {
+  forgetPasswordSendOTP,
   loginUser,
   logoutUser,
   registerUser,
@@ -17,5 +18,6 @@ authRouter.post(
   resendVerificationLink
 );
 authRouter.post("/user/auth/verify-email/:token", verifyUserEmailAccount);
+authRouter.post("/user/auth/forget-password/get-otp", forgetPasswordSendOTP);
 
 export default authRouter;
