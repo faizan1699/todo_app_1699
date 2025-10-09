@@ -18,6 +18,9 @@ authRouter.post(
   resendVerificationLink
 );
 authRouter.post("/user/auth/verify-email/:token", verifyUserEmailAccount);
-authRouter.post("/user/auth/forget-password/get-otp", forgetPasswordSendOTP);
+authRouter.post(
+  "/user/auth/forget-password/get-otp/:email",
+  forgetPasswordSendOTP
+);
 
 export default authRouter;

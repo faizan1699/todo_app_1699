@@ -116,8 +116,6 @@ export const loginUser = async (req, res) => {
     });
   } catch (error) {
     return errorMessage(res, error);
-  } finally {
-    console.log("login api called");
   }
 };
 
@@ -198,14 +196,15 @@ export const logoutUser = async (req, res) => {
 
 export const forgetPasswordSendOTP = async (req, res) => {
   try {
-    const { email } = req.body;
+    const { email } = req.params;
+
     if (!email) {
       return res.status(200).json({
         message: "email required",
         status: false,
       });
     }
-    const user = await User.findOne(email);
+    const user = await User.findOne({ email });
     if (!user) {
       return res.status(400).json({
         message: "email not associated with this site",
@@ -214,10 +213,9 @@ export const forgetPasswordSendOTP = async (req, res) => {
     }
     const otp = generateOTP(4);
 
-    await sendOTPTOUser(email, otp, res);
-
     user.otp = otp;
     await user.save();
+    await sendOTPTOUser(email, otp, res);
 
     return res.status(200).json({
       message: `otp send successfully sent to = ${email}`,
@@ -228,11 +226,11 @@ export const forgetPasswordSendOTP = async (req, res) => {
   }
 };
 
-export const forgetPassowrd = async (req, res) => {
+export const setNewPassowrd = async (req, res) => {
   try {
-    const { name, email, password, confirm_password } = req.body;
+    const { otp, email, password, confirm_password } = req.body;
     const isValidate = validateReqFields(req.body, [
-      "name",
+      "otp",
       "email",
       "password",
       "confirm_password",
@@ -241,34 +239,28 @@ export const forgetPassowrd = async (req, res) => {
     if (!isValidate.success) {
       return res.status(400).json({ message: isValidate.message });
     }
-
     if (password !== confirm_password) {
       return res.status(400).json({ message: "password not match." });
     }
 
     const user = await User.findOne({ email: email });
-    if (user) {
-      return res
-        .status(201)
-        .json({ message: "User already / exists", status: false });
+    if (!user) {
+      return res.status(204).json({ message: "user not found", status: false });
+    }
+
+    if (otp !== user.otp) {
+      return res.status(403).json({ message: "invalid otp", status: false });
     }
 
     const salt = await bcrypt.genSalt(10);
     const encryptedPassword = await bcrypt.hash(password, salt);
 
-    const id = generateOTP(4);
-    const newUser = await User.create({
-      name,
-      email,
-      password: encryptedPassword,
-      user_id: id,
-    });
-    await newUser.save();
-    await sendVerificationEmail(email, res);
+    user.password = encryptedPassword;
+    user.otp = undefined;
+    await user.save();
 
     return res.status(200).json({
-      message:
-        "User registered successfully , an account verification link has been sent to your email.",
+      message: "password updated successfully",
       status: true,
     });
   } catch (error) {
