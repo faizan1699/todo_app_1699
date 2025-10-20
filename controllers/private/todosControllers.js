@@ -7,6 +7,7 @@ import mongoose from "mongoose";
 
 export const getAllTodos = async (req, res) => {
   try {
+    const reqBody = req.json();
     const data = await observer(req, res);
     if (!data) {
       return res.status(401).json({ message: "Unauthorized", status: false });
@@ -86,9 +87,10 @@ export const updateTodoById = async (req, res) => {
     const isValid = updates.every((key) => allowedUpdates.includes(key));
 
     if (!isValid) {
-      return res
-        .status(400)
-        .json({ error: "invalid field to update , pls check", status: false });
+      return res.status(422).json({
+        error: "field not allowed to update , pls check",
+        status: false,
+      });
     }
     const x = await observer(req, res);
     if (!x) {

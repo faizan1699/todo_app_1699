@@ -14,7 +14,7 @@ import {
 } from "../controllers/private/todosControllers.js";
 
 const protectedRoutes = express.Router();
-
+// users route
 protectedRoutes.get("/users/listing", getUsers);
 protectedRoutes.get("/user/get/:id", getUserById);
 protectedRoutes.delete("/user/delete/:id", deleteUserById);

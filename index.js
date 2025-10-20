@@ -13,6 +13,7 @@ const app = express();
 const PORT = process.env.PORT;
 
 mongoose.set("strictQuery", false);
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cors());

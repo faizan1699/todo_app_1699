@@ -5,6 +5,7 @@ import {
   logoutUser,
   registerUser,
   resendVerificationLink,
+  setNewPassowrd,
   verifyUserEmailAccount,
 } from "../controllers/authControllers.js";
 
@@ -22,5 +23,6 @@ authRouter.post(
   "/user/auth/forget-password/get-otp/:email",
   forgetPasswordSendOTP
 );
+authRouter.post("/user/auth/set-new/password", setNewPassowrd);
 
 export default authRouter;
